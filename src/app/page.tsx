@@ -84,8 +84,8 @@ export default function Home() {
       <main className="flex justify-center items-center min-h-screen bg-gray-50">
         <div className="w-full max-w-4xl mx-auto p-6 space-y-8 bg-white shadow-md rounded-lg pt-20 pb-10">
           <div className="space-y-8">
-            <div className="flex items-start space-x-4 pl-14">
-              <h3 className="w-1/4 text-right font-medium flex items-center">
+            <div className="flex items-start space-x-4 pl-20">
+              <h3 className="w-1/5 text-right font-medium flex items-center">
                 テーマ
               </h3>
               <div className="flex-grow flex flex-col space-y-2">
@@ -99,14 +99,13 @@ export default function Home() {
                       <SelectItem value="specify">テーマ指定</SelectItem>
                     </SelectContent>
                   </Select>
-                  {selectedTheme === "specify" && (
-                    <Input
-                      type="text"
-                      className="w-[250px]"
-                      placeholder="テーマを入力してください"
-                      onChange={(e) => setTheme(e.target.value)}
-                    />
-                  )}
+                  <Input
+                    type="text"
+                    className="w-[250px]"
+                    placeholder="テーマを入力してください"
+                    disabled={selectedTheme !== "specify"}
+                    onChange={(e) => setTheme(e.target.value)}
+                  />
                 </div>
                 <div className="h-5">
                   {errors.selectedTheme && (
@@ -119,9 +118,9 @@ export default function Home() {
               </div>
             </div>
 
-            <div className="flex items-start space-x-4 pl-14">
-              <h3 className="w-1/4 text-right font-medium flex items-center">
-                シンキングタイム(秒)
+            <div className="flex items-start space-x-4 pl-20">
+              <h3 className="w-1/5 text-right font-medium flex items-center">
+                シンキングタイム
               </h3>
               <div className="flex-grow flex flex-col space-y-2">
                 <div className="flex items-center space-x-4">
@@ -129,7 +128,7 @@ export default function Home() {
                     onValueChange={(value) => setSelectedThinkTime(value)}
                   >
                     <SelectTrigger className="w-[250px]">
-                      <SelectValue placeholder="タイムを設定してください" />
+                      <SelectValue placeholder="時間を設定してください" />
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="10s">10秒</SelectItem>
@@ -138,14 +137,13 @@ export default function Home() {
                       <SelectItem value="custom-think">カスタム</SelectItem>
                     </SelectContent>
                   </Select>
-                  {selectedThinkTime === "custom-think" && (
-                    <Input
-                      type="text"
-                      className="w-[250px]"
-                      placeholder="タイムを入力してください"
-                      onChange={(e) => setThinkTime(e.target.value)}
-                    />
-                  )}
+                  <Input
+                    type="text"
+                    className="w-[250px]"
+                    placeholder="時間を入力してください"
+                    disabled={selectedThinkTime !== "custom-think"}
+                    onChange={(e) => setThinkTime(e.target.value)}
+                  />
                 </div>
                 <div className="h-5">
                   {errors.selectedThinkTime && (
@@ -158,9 +156,9 @@ export default function Home() {
               </div>
             </div>
 
-            <div className="flex items-start space-x-4 pl-14">
-              <h3 className="w-1/4 text-right font-medium flex items-center">
-                スピーキングタイム(秒)
+            <div className="flex items-start space-x-4 pl-20">
+              <h3 className="w-1/5 text-right font-medium flex items-center">
+                スピーキングタイム
               </h3>
               <div className="flex-grow flex flex-col space-y-2">
                 <div className="flex items-center space-x-4">
@@ -177,14 +175,13 @@ export default function Home() {
                       <SelectItem value="custom-speak">カスタム</SelectItem>
                     </SelectContent>
                   </Select>
-                  {selectedSpeakTime === "custom-speak" && (
-                    <Input
-                      type="text"
-                      className="w-[250px]"
-                      placeholder="時間を入力してください"
-                      onChange={(e) => setSpeakTime(e.target.value)}
-                    />
-                  )}
+                  <Input
+                    type="text"
+                    className="w-[250px]"
+                    placeholder="時間を入力してください"
+                    disabled={selectedSpeakTime !== "custom-speak"}
+                    onChange={(e) => setSpeakTime(e.target.value)}
+                  />
                 </div>
                 <div className="h-5">
                   {errors.selectedSpeakTime && (
