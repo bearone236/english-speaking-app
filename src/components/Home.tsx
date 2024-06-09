@@ -19,6 +19,7 @@ const Home = () => {
   const [thinkTime, setThinkTime] = useState<string>("");
   const [selectedSpeakTime, setSelectedSpeakTime] = useState<string>("");
   const [speakTime, setSpeakTime] = useState<string>("");
+  const [selectedLevel, setSelectedLevel] = useState<string>("");
   const [errors, setErrors] = useState<Partial<Record<string, string>>>({});
   const [loading, setLoading] = useState<boolean>(false);
   const router = useRouter();
@@ -36,6 +37,7 @@ const Home = () => {
       newErrors.selectedSpeakTime = "Speak time is not selected";
     if (selectedSpeakTime === "custom-speak" && !speakTime)
       newErrors.speakTime = "Please enter speak time";
+    if (!selectedLevel) newErrors.selectedLevel = "Level is not selected";
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -51,7 +53,7 @@ const Home = () => {
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ prompt: prompt_post }),
+          body: JSON.stringify({ prompt: prompt_post, level: selectedLevel }),
         });
 
         if (!response.ok) {
@@ -65,7 +67,7 @@ const Home = () => {
         // クエリパラメータをURL文字列として構築
         const href = `/thinking?theme=${data.message}&thinkTime=${
           thinkTime || 30
-        }&speakTime=${speakTime || 60}`;
+        }&speakTime=${speakTime || 60}&level=${selectedLevel}`;
         router.push(href);
         setLoading(false);
       } catch (error) {
@@ -186,6 +188,29 @@ const Home = () => {
                   )}
                   {errors.speakTime && selectedSpeakTime === "custom-speak" && (
                     <p className="text-red-500">{errors.speakTime}</p>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            <div className="flex items-start space-x-4">
+              <h3 className="w-1/5 text-right font-medium flex items-center">
+                Level
+              </h3>
+              <div className="flex-grow flex flex-col space-y-2">
+                <Select onValueChange={(value) => setSelectedLevel(value)}>
+                  <SelectTrigger className="w-[250px]">
+                    <SelectValue placeholder="Select level" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="Low">Low</SelectItem>
+                    <SelectItem value="Medium">Medium</SelectItem>
+                    <SelectItem value="High">High</SelectItem>
+                  </SelectContent>
+                </Select>
+                <div className="h-5">
+                  {errors.selectedLevel && (
+                    <p className="text-red-500">{errors.selectedLevel}</p>
                   )}
                 </div>
               </div>
