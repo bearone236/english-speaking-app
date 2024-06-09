@@ -64,9 +64,13 @@ const Home = () => {
         const data = await response.json();
         console.log("Received data:", data);
 
-        const href = `/thinking?theme=${data.message}&thinkTime=${
-          thinkTime || 30
-        }&speakTime=${speakTime || 60}&level=${selectedLevel}`;
+        // Use the correct thinkTime value
+        const effectiveThinkTime =
+          selectedThinkTime === "custom-think" ? thinkTime : selectedThinkTime;
+        const effectiveSpeakTime =
+          selectedSpeakTime === "custom-speak" ? speakTime : selectedSpeakTime;
+
+        const href = `/thinking?theme=${data.message}&thinkTime=${effectiveThinkTime}&speakTime=${effectiveSpeakTime}&level=${selectedLevel}`;
         router.push(href);
         setLoading(false);
       } catch (error) {
@@ -128,9 +132,9 @@ const Home = () => {
                       <SelectValue placeholder="Select time" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="10s">10 seconds</SelectItem>
-                      <SelectItem value="30s">30 seconds</SelectItem>
-                      <SelectItem value="60s">60 seconds</SelectItem>
+                      <SelectItem value="10">10 seconds</SelectItem>
+                      <SelectItem value="30">30 seconds</SelectItem>
+                      <SelectItem value="60">60 seconds</SelectItem>
                       <SelectItem value="custom-think">Custom</SelectItem>
                     </SelectContent>
                   </Select>
@@ -166,9 +170,9 @@ const Home = () => {
                       <SelectValue placeholder="Select time" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="60s">60 seconds</SelectItem>
-                      <SelectItem value="120s">120 seconds</SelectItem>
-                      <SelectItem value="180s">180 seconds</SelectItem>
+                      <SelectItem value="60">60 seconds</SelectItem>
+                      <SelectItem value="120">120 seconds</SelectItem>
+                      <SelectItem value="180">180 seconds</SelectItem>
                       <SelectItem value="custom-speak">Custom</SelectItem>
                     </SelectContent>
                   </Select>
