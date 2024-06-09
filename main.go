@@ -96,9 +96,9 @@ func (client *GeminiClient) GenerateContent(ctx context.Context, prompt string) 
 
 func generatePrompt(customTheme, level string) string {
 	if customTheme == "random" {
-		return fmt.Sprintf(`Generate a single English question related to improving communication skills in the workplace at a %s level. The question should be in the form of a yes/no question or an open-ended question that encourages discussion.`, level)
+		return fmt.Sprintf(`Generate a single English question at a %s level that encourages meaningful conversation. The question should be designed to elicit detailed responses and stimulate discussion on topics such as opinions, priorities, and values. Please ensure the questions are varied and cover different aspects each time.`, level)
 	}
-	return fmt.Sprintf(`Generate a single English question related to improving communication skills in the workplace at a %s level, focusing on the following theme: "%s". The question should be in the form of a yes/no question or an open-ended question that encourages discussion.`, level, customTheme)
+	return fmt.Sprintf(`Generate a single English question at a %s level, focusing on the following theme: "%s". The question should encourage meaningful conversation, elicit detailed responses, and stimulate discussion on topics such as opinions, priorities, and values. Please ensure the questions are varied and cover different aspects each time.`, level, customTheme)
 }
 
 func main() {
