@@ -10,7 +10,6 @@ import {
 } from "./ui/select";
 import { Input } from "./ui/input";
 import { Button } from "./ui/button";
-import Header from "./Header";
 
 const Home = () => {
   const [selectedTheme, setSelectedTheme] = useState<string>("");
@@ -63,8 +62,8 @@ const Home = () => {
         }
 
         const data = await response.json();
-        console.log("Received data:", data); // 追加されたログ出力
-        // クエリパラメータをURL文字列として構築
+        console.log("Received data:", data);
+
         const href = `/thinking?theme=${data.message}&thinkTime=${
           thinkTime || 30
         }&speakTime=${speakTime || 60}&level=${selectedLevel}`;
@@ -79,10 +78,9 @@ const Home = () => {
 
   return (
     <div>
-      <Header />
       <main className="flex justify-center items-center min-h-screen bg-gray-50">
-        <div className="w-full max-w-4xl mx-auto p-6 space-y-8 bg-white shadow-md rounded-lg">
-          <div className="space-y-8">
+        <div className="w-full max-w-4xl mx-auto p-6 space-y-8 bg-white shadow-md rounded-lg pt-20">
+          <div className="space-y-8 pl-20">
             <div className="flex items-start space-x-4">
               <h3 className="w-1/5 text-right font-medium flex items-center">
                 Theme
