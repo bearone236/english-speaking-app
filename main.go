@@ -94,11 +94,11 @@ func (client *GeminiClient) GenerateContent(ctx context.Context, prompt string) 
 	return text, nil
 }
 
-func generatePrompt(customTheme string) string {
+func generatePrompt(customTheme, level string) string {
 	if customTheme == "random" {
-		return `Generate a single English question related to improving communication skills in the workplace, suitable for an English-speaking skill improvement app. The question should be in the form of a yes/no question or an open-ended question that encourages discussion.`
+		return fmt.Sprintf(`Generate a single English question related to improving communication skills in the workplace at a %s level. The question should be in the form of a yes/no question or an open-ended question that encourages discussion.`, level)
 	}
-	return fmt.Sprintf(`Generate a single English question related to improving communication skills in the workplace, focusing on the following theme: "%s". The question should be in the form of a yes/no question or an open-ended question that encourages discussion.`, customTheme)
+	return fmt.Sprintf(`Generate a single English question related to improving communication skills in the workplace at a %s level, focusing on the following theme: "%s". The question should be in the form of a yes/no question or an open-ended question that encourages discussion.`, level, customTheme)
 }
 
 func main() {
@@ -112,6 +112,7 @@ func main() {
 	mux.HandleFunc("/api/gemini", func(w http.ResponseWriter, r *http.Request) {
 		var requestData struct {
 			Prompt string `json:"prompt"`
+			Level  string `json:"level"`
 		}
 
 		if err := json.NewDecoder(r.Body).Decode(&requestData); err != nil {
@@ -119,7 +120,7 @@ func main() {
 			return
 		}
 
-		prompt := generatePrompt(requestData.Prompt)
+		prompt := generatePrompt(requestData.Prompt, requestData.Level)
 
 		message, err := client.GenerateContent(context.Background(), prompt)
 		if err != nil {
@@ -129,7 +130,7 @@ func main() {
 
 		question := strings.SplitN(message, "\n", 2)[0]
 
-		log.Printf("Generated message: %s", question) // 追加されたログ出力
+		log.Printf("Generated message: %s", question) // ログ
 
 		responseData := map[string]string{"message": question}
 		w.Header().Set("Content-Type", "application/json")
