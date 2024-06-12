@@ -22,14 +22,14 @@ func InitializeEvaluationClient() *EvaluationClient {
 	}
 }
 
-func (client *EvaluationClient) EvaluateContent(ctx context.Context, transcript string) (string, error) {
+func (client *EvaluationClient) EvaluateContent(ctx context.Context, prompt, transcript string) (string, error) {
 	url := client.APIURL + "?key=" + client.APIKey
 
 	requestBody, err := json.Marshal(map[string]interface{}{
 		"contents": []map[string]interface{}{
 			{
 				"parts": []map[string]string{
-					{"text": transcript},
+					{"text": fmt.Sprintf("Theme: %s\n\nSpeech: %s\n\nEvaluate the above speech based on the theme and provide feedback on the accuracy and relevance of the response.", prompt, transcript)},
 				},
 			},
 		},
@@ -71,6 +71,7 @@ func (client *EvaluationClient) EvaluateContent(ctx context.Context, transcript 
 
 func handleEvaluate(w http.ResponseWriter, r *http.Request) {
 	var requestData struct {
+		Prompt     string `json:"prompt"`
 		Transcript string `json:"transcript"`
 	}
 
@@ -81,7 +82,7 @@ func handleEvaluate(w http.ResponseWriter, r *http.Request) {
 
 	client := InitializeEvaluationClient()
 
-	message, err := client.EvaluateContent(context.Background(), requestData.Transcript)
+	message, err := client.EvaluateContent(context.Background(), requestData.Prompt, requestData.Transcript)
 	if err != nil {
 		http.Error(w, fmt.Sprintf("Gemini API error: %v", err), http.StatusInternalServerError)
 		return
