@@ -94,13 +94,13 @@ func generatePrompt(customTheme, level string) string {
 	levelDescription := ""
 	switch level {
 	case "Low":
-		levelDescription = "The questions should be simple and use basic vocabulary and grammar. They should be easy to understand and answer."
+		levelDescription = "The questions should be simple and use basic vocabulary and grammar. They should be easy to understand and answer. Each question should be concise."
 	case "Medium":
-		levelDescription = "The questions should use more complex sentences and vocabulary, challenging learners to form detailed responses."
+		levelDescription = "The questions should use more complex sentences and vocabulary, challenging learners to form detailed responses. Each question should be concise."
 	case "High":
-		levelDescription = "The questions should use advanced vocabulary and complex sentence structures, requiring critical thinking and detailed responses."
+		levelDescription = "The questions should use advanced vocabulary and complex sentence structures, requiring critical thinking and detailed responses. Each question should be concise."
 	default:
-		levelDescription = "The questions should elicit detailed responses and stimulate discussion on topics such as opinions, priorities, and values."
+		levelDescription = "The questions should elicit detailed responses and stimulate discussion on topics such as opinions, priorities, and values. Each question should be concise."
 	}
 
 	if customTheme == "random" {
