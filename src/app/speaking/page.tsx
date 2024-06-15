@@ -109,8 +109,8 @@ const Speak = () => {
         error: text.trim() === "" ? "true" : "false",
         speakTime: initialSpeakTime.toString(),
       }).toString();
-      console.log("Navigating to evaluation with query:", query);
-      router.push(`/evaluation?${query}`);
+      console.log("Navigating to result with query:", query);
+      router.push(`/result?${query}`);
     }
   }, [
     speakTime,
