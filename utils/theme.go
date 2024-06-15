@@ -94,19 +94,19 @@ func generatePrompt(customTheme, level string) string {
 	levelDescription := ""
 	switch level {
 	case "Low":
-		levelDescription = "This level is suitable for beginners. The questions should be simple, using basic vocabulary and grammar. Aim to create questions that are easy to understand and answer for those with limited English proficiency."
+		levelDescription = "The questions should be simple and use basic vocabulary and grammar. They should be easy to understand and answer."
 	case "Medium":
-		levelDescription = "This level is suitable for intermediate learners. The questions should use more complex sentences and vocabulary. Aim to create questions that challenge the learner to form more detailed and nuanced responses."
+		levelDescription = "The questions should use more complex sentences and vocabulary, challenging learners to form detailed responses."
 	case "High":
-		levelDescription = "This level is suitable for advanced learners. The questions should use advanced vocabulary and complex sentence structures. Aim to create questions that require critical thinking and articulate, detailed responses."
+		levelDescription = "The questions should use advanced vocabulary and complex sentence structures, requiring critical thinking and detailed responses."
 	default:
-		levelDescription = "The questions should be designed to elicit detailed responses and stimulate discussion on topics such as opinions, priorities, and values. Please ensure the questions are varied and cover different aspects each time."
+		levelDescription = "The questions should elicit detailed responses and stimulate discussion on topics such as opinions, priorities, and values."
 	}
 
 	if customTheme == "random" {
-		return fmt.Sprintf(`Generate a single English question at a %s level. %s The question should be designed to elicit detailed responses and stimulate discussion on topics such as opinions, priorities, and values. Please ensure the questions are varied and cover different aspects each time.`, level, levelDescription)
+		return fmt.Sprintf(`Generate a single English question at a %s level. %s The question should stimulate discussion and be varied each time.`, level, levelDescription)
 	}
-	return fmt.Sprintf(`Generate a single English question at a %s level, focusing on the following theme: "%s". %s The question should encourage meaningful conversation, elicit detailed responses, and stimulate discussion on topics such as opinions, priorities, and values. Please ensure the questions are varied and cover different aspects each time.`, level, customTheme, levelDescription)
+	return fmt.Sprintf(`Generate a single English question at a %s level, focusing on the following theme: "%s". %s The question should stimulate meaningful conversation and be varied each time.`, level, customTheme, levelDescription)
 }
 
 func HandleTheme(w http.ResponseWriter, r *http.Request) {
