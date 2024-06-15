@@ -7,6 +7,7 @@ const Speak = () => {
   const searchParams = useSearchParams();
   const router = useRouter();
   const [speakTime, setSpeakTime] = useState<number>(0);
+  const [initialSpeakTime, setInitialSpeakTime] = useState<number>(0);
   const [speaking, setSpeaking] = useState<boolean>(false);
   const [text, setText] = useState<string>("");
   const [transcript, setTranscript] = useState<string>("");
@@ -14,11 +15,16 @@ const Speak = () => {
   const [recognition, setRecognition] = useState<SpeechRecognition | null>(
     null
   );
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const speakTimeParam = searchParams.get("speakTime");
     const themeParam = searchParams.get("theme");
-    if (speakTimeParam) setSpeakTime(parseInt(speakTimeParam, 10));
+    if (speakTimeParam) {
+      const speakTimeValue = parseInt(speakTimeParam, 10);
+      setSpeakTime(speakTimeValue);
+      setInitialSpeakTime(speakTimeValue);
+    }
     if (themeParam) setTheme(themeParam);
   }, [searchParams]);
 
@@ -30,6 +36,10 @@ const Speak = () => {
       newRecognition.lang = "en-US";
       newRecognition.continuous = true;
       newRecognition.interimResults = true;
+
+      newRecognition.onstart = () => {
+        console.log("Speech recognition service has started");
+      };
 
       newRecognition.onresult = (event) => {
         const results = event.results;
@@ -45,14 +55,21 @@ const Speak = () => {
           }
         }
         setTranscript(interimTranscript);
+        console.log("Interim Transcript:", interimTranscript);
+        console.log("Final Transcript:", text);
       };
 
       newRecognition.onerror = (event) => {
         console.error("Speech recognition error:", event.error);
+        if (event.error === "no-speech") {
+          console.warn("No speech detected. Please speak into the microphone.");
+          setError("no-speech");
+        }
         setSpeaking(false);
       };
 
       newRecognition.onend = () => {
+        console.log("Speech recognition service disconnected");
         if (speakTime > 0) {
           newRecognition.start();
         } else {
@@ -83,20 +100,39 @@ const Speak = () => {
       if (recognition) {
         recognition.stop();
       }
+      if (text.trim() === "") {
+        setError("no-speech");
+      }
       const query = new URLSearchParams({
         theme: theme,
         transcript: text,
+        error: text.trim() === "" ? "true" : "false",
+        speakTime: initialSpeakTime.toString(),
       }).toString();
       console.log("Navigating to evaluation with query:", query);
       router.push(`/evaluation?${query}`);
     }
-  }, [speakTime, speaking, text, theme, recognition, router]);
+  }, [
+    speakTime,
+    speaking,
+    text,
+    theme,
+    error,
+    recognition,
+    router,
+    initialSpeakTime,
+  ]);
 
   useEffect(() => {
     if (speakTime > 0) {
       setSpeaking(true);
     }
   }, [speakTime]);
+
+  const handleEndSpeaking = () => {
+    setError("no-speech");
+    setSpeakTime(0);
+  };
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">
@@ -105,7 +141,7 @@ const Speak = () => {
       </div>
       {speakTime > 0 && (
         <button
-          onClick={() => setSpeakTime(0)}
+          onClick={handleEndSpeaking}
           className="mt-8 px-4 py-2 bg-red-500 text-white rounded"
         >
           End Speaking
