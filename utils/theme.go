@@ -1,4 +1,4 @@
-package main
+package utils
 
 import (
 	"bytes"
@@ -97,7 +97,7 @@ func generatePrompt(customTheme, level string) string {
 	return fmt.Sprintf(`Generate a single English question at a %s level, focusing on the following theme: "%s". The question should encourage meaningful conversation, elicit detailed responses, and stimulate discussion on topics such as opinions, priorities, and values. Please ensure the questions are varied and cover different aspects each time.`, level, customTheme)
 }
 
-func handleTheme(w http.ResponseWriter, r *http.Request) {
+func HandleTheme(w http.ResponseWriter, r *http.Request) {
 	var requestData struct {
 		Prompt string `json:"prompt"`
 		Level  string `json:"level"`

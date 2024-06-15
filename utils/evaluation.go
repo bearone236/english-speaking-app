@@ -1,4 +1,4 @@
-package main
+package utils
 
 import (
 	"bytes"
@@ -69,7 +69,7 @@ func (client *EvaluationClient) EvaluateContent(ctx context.Context, prompt, tra
 	return evaluation, nil
 }
 
-func handleEvaluate(w http.ResponseWriter, r *http.Request) {
+func HandleEvaluate(w http.ResponseWriter, r *http.Request) {
 	var requestData struct {
 		Prompt     string `json:"prompt"`
 		Transcript string `json:"transcript"`
