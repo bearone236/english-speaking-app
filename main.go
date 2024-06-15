@@ -4,6 +4,8 @@ import (
 	"log"
 	"net/http"
 
+	"backend/utils"
+
 	"github.com/joho/godotenv"
 	"github.com/rs/cors"
 )
@@ -15,8 +17,8 @@ func main() {
 	}
 
 	mux := http.NewServeMux()
-	mux.HandleFunc("/api/gemini", handleTheme)
-	mux.HandleFunc("/api/evaluate", handleEvaluate)
+	mux.HandleFunc("/api/gemini", utils.HandleTheme)
+	mux.HandleFunc("/api/evaluate", utils.HandleEvaluate)
 
 	handler := cors.Default().Handler(mux)
 
