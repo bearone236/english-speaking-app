@@ -16,14 +16,14 @@ const Speak = () => {
     null
   );
   const [error, setError] = useState<string | null>(null);
-  const [thinkTime, setThinkTime] = useState<string | null>(null); // Add thinkTime state
-  const [level, setLevel] = useState<string | null>(null); // Add level state
+  const [thinkTime, setThinkTime] = useState<string | null>(null);
+  const [level, setLevel] = useState<string | null>(null);
 
   useEffect(() => {
     const speakTimeParam = searchParams.get("speakTime");
     const themeParam = searchParams.get("theme");
-    const thinkTimeParam = searchParams.get("thinkTime"); // Get thinkTime from query params
-    const levelParam = searchParams.get("level"); // Get level from query params
+    const thinkTimeParam = searchParams.get("thinkTime");
+    const levelParam = searchParams.get("level");
 
     if (speakTimeParam) {
       const speakTimeValue = parseInt(speakTimeParam, 10);
@@ -31,8 +31,8 @@ const Speak = () => {
       setInitialSpeakTime(speakTimeValue);
     }
     if (themeParam) setTheme(themeParam);
-    if (thinkTimeParam) setThinkTime(thinkTimeParam); // Set thinkTime state
-    if (levelParam) setLevel(levelParam); // Set level state
+    if (thinkTimeParam) setThinkTime(thinkTimeParam);
+    if (levelParam) setLevel(levelParam);
   }, [searchParams]);
 
   useEffect(() => {
@@ -62,8 +62,6 @@ const Speak = () => {
           }
         }
         setTranscript(interimTranscript);
-        console.log("Interim Transcript:", interimTranscript);
-        console.log("Final Transcript:", text);
       };
 
       newRecognition.onerror = (event) => {
@@ -118,7 +116,6 @@ const Speak = () => {
         thinkTime: thinkTime || "0",
         level: level || "",
       }).toString();
-      console.log("Navigating to result with query:", query);
       router.push(`/result?${query}`);
     }
   }, [
@@ -158,10 +155,7 @@ const Speak = () => {
           End Speaking
         </button>
       )}
-      <div>
-        <p>Interim Transcript: {transcript}</p>
-        <p>Final Transcript: {text}</p>
-      </div>
+      <div></div>
     </div>
   );
 };
