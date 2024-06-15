@@ -16,16 +16,23 @@ const Speak = () => {
     null
   );
   const [error, setError] = useState<string | null>(null);
+  const [thinkTime, setThinkTime] = useState<string | null>(null); // Add thinkTime state
+  const [level, setLevel] = useState<string | null>(null); // Add level state
 
   useEffect(() => {
     const speakTimeParam = searchParams.get("speakTime");
     const themeParam = searchParams.get("theme");
+    const thinkTimeParam = searchParams.get("thinkTime"); // Get thinkTime from query params
+    const levelParam = searchParams.get("level"); // Get level from query params
+
     if (speakTimeParam) {
       const speakTimeValue = parseInt(speakTimeParam, 10);
       setSpeakTime(speakTimeValue);
       setInitialSpeakTime(speakTimeValue);
     }
     if (themeParam) setTheme(themeParam);
+    if (thinkTimeParam) setThinkTime(thinkTimeParam); // Set thinkTime state
+    if (levelParam) setLevel(levelParam); // Set level state
   }, [searchParams]);
 
   useEffect(() => {
@@ -108,6 +115,8 @@ const Speak = () => {
         transcript: text,
         error: text.trim() === "" ? "true" : "false",
         speakTime: initialSpeakTime.toString(),
+        thinkTime: thinkTime || "0",
+        level: level || "",
       }).toString();
       console.log("Navigating to result with query:", query);
       router.push(`/result?${query}`);
@@ -121,6 +130,8 @@ const Speak = () => {
     recognition,
     router,
     initialSpeakTime,
+    thinkTime,
+    level,
   ]);
 
   useEffect(() => {

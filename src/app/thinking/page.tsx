@@ -44,15 +44,19 @@ const Think = () => {
       const timer = setTimeout(() => setCountdown(countdown - 1), 1000);
       return () => clearTimeout(timer);
     } else {
-      if (theme && speakTime !== null) {
-        const query = new URLSearchParams({
+      if (theme && speakTime !== null && thinkTime !== null) {
+        const queryParams: Record<string, string> = {
           theme,
           speakTime: speakTime.toString(),
-        }).toString();
+          thinkTime: thinkTime.toString(),
+          level: level || "",
+        };
+
+        const query = new URLSearchParams(queryParams).toString();
         router.push(`/speaking?${query}`);
       }
     }
-  }, [countdown, router, theme, speakTime]);
+  }, [countdown, router, theme, speakTime, thinkTime, level]);
 
   const getLevelColor = (level: string) => {
     switch (level) {
