@@ -22,14 +22,14 @@ func InitializeEvaluationClient() *EvaluationClient {
 	}
 }
 
-func (client *EvaluationClient) EvaluateContent(ctx context.Context, prompt, transcript string) (string, error) {
+func (client *EvaluationClient) EvaluateContent(ctx context.Context, theme, transcript string) (string, error) {
 	url := client.APIURL + "?key=" + client.APIKey
 
 	requestBody, err := json.Marshal(map[string]interface{}{
 		"contents": []map[string]interface{}{
 			{
 				"parts": []map[string]string{
-					{"text": fmt.Sprintf("Theme: %s\n\nSpeech: %s\n\nEvaluate the above speech based on the theme and provide feedback on the accuracy and relevance of the response.", prompt, transcript)},
+					{"text": fmt.Sprintf("Theme: %s\n\nSpeech: %s\n\nEvaluate the above speech based on the theme and provide feedback on the accuracy and relevance of the response.", theme, transcript)},
 				},
 			},
 		},
@@ -71,7 +71,7 @@ func (client *EvaluationClient) EvaluateContent(ctx context.Context, prompt, tra
 
 func HandleEvaluate(w http.ResponseWriter, r *http.Request) {
 	var requestData struct {
-		Prompt     string `json:"prompt"`
+		Theme      string `json:"theme"`
 		Transcript string `json:"transcript"`
 	}
 
@@ -82,7 +82,7 @@ func HandleEvaluate(w http.ResponseWriter, r *http.Request) {
 
 	client := InitializeEvaluationClient()
 
-	message, err := client.EvaluateContent(context.Background(), requestData.Prompt, requestData.Transcript)
+	message, err := client.EvaluateContent(context.Background(), requestData.Theme, requestData.Transcript)
 	if err != nil {
 		http.Error(w, fmt.Sprintf("Gemini API error: %v", err), http.StatusInternalServerError)
 		return
