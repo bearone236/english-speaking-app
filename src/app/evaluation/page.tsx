@@ -13,6 +13,8 @@ const Evaluation = () => {
   useEffect(() => {
     const themeParam = searchParams.get("theme");
     const transcriptParam = searchParams.get("transcript");
+    console.log("Received theme:", themeParam);
+    console.log("Received transcript:", transcriptParam);
     if (themeParam) setTheme(themeParam);
     if (transcriptParam) setTranscript(transcriptParam);
   }, [searchParams]);
