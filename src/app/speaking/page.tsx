@@ -8,9 +8,12 @@ const Speak = () => {
   const router = useRouter();
   const [speakTime, setSpeakTime] = useState<number>(0);
   const [speaking, setSpeaking] = useState<boolean>(false);
+  const [text, setText] = useState<string>("");
   const [transcript, setTranscript] = useState<string>("");
   const [theme, setTheme] = useState<string>("");
-  let recognition: any;
+  const [recognition, setRecognition] = useState<SpeechRecognition | null>(
+    null
+  );
 
   useEffect(() => {
     const speakTimeParam = searchParams.get("speakTime");
@@ -18,6 +21,45 @@ const Speak = () => {
     if (speakTimeParam) setSpeakTime(parseInt(speakTimeParam, 10));
     if (themeParam) setTheme(themeParam);
   }, [searchParams]);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const recognition = new (
+        window as any
+      ).webkitSpeechRecognition() as SpeechRecognition;
+      recognition.lang = "en-US";
+      recognition.continuous = true;
+      recognition.interimResults = true;
+      setRecognition(recognition);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (!recognition) return;
+    if (speaking) {
+      recognition.start();
+    } else {
+      recognition.stop();
+      setText("");
+    }
+  }, [speaking, recognition]);
+
+  useEffect(() => {
+    if (!recognition) return;
+    recognition.onresult = (event) => {
+      const results = event.results;
+      for (let i = event.resultIndex; i < results.length; i++) {
+        if (results[i].isFinal) {
+          setText(
+            (prevText) => prevText + " " + results[i][0].transcript + "."
+          );
+          setTranscript("");
+        } else {
+          setTranscript(results[i][0].transcript);
+        }
+      }
+    };
+  }, [recognition]);
 
   useEffect(() => {
     if (speakTime > 0) {
@@ -29,61 +71,16 @@ const Speak = () => {
       }
       const query = new URLSearchParams({
         theme: theme,
-        transcript: transcript,
+        transcript: text,
       }).toString();
+      console.log("Navigating to evaluation with query:", query);
       router.push(`/evaluation?${query}`);
     }
-  }, [speakTime, speaking, theme, transcript, router]);
+  }, [speakTime, speaking, text, theme, recognition, router]);
 
   const startRecording = () => {
     setSpeaking(true);
-    if (!("webkitSpeechRecognition" in window)) {
-      alert("Your browser does not support speech recognition.");
-      return;
-    }
-
-    recognition = new (window as any).webkitSpeechRecognition();
-    recognition.lang = "en-US";
-    recognition.interimResults = true;
-    recognition.maxAlternatives = 1;
-
-    recognition.onresult = (event: { resultIndex: any; results: any }) => {
-      let interimTranscript = "";
-      for (let i = event.resultIndex; i < event.results.length; i++) {
-        const result = event.results[i];
-        if (result.isFinal) {
-          setTranscript(
-            (prevTranscript) =>
-              prevTranscript + " " + result[0].transcript + "."
-          );
-        } else {
-          interimTranscript += result[0].transcript;
-        }
-      }
-      console.log("Interim Transcript:", interimTranscript);
-    };
-
-    recognition.onerror = (event: { error: any }) => {
-      console.error(event.error);
-      setSpeaking(false);
-    };
-
-    recognition.onend = () => {
-      if (speakTime > 0) {
-        recognition.start();
-      } else {
-        setSpeaking(false);
-      }
-    };
-
-    recognition.start();
   };
-
-  useEffect(() => {
-    if (speakTime > 0 && !speaking) {
-      startRecording();
-    }
-  }, [speakTime]);
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">
@@ -98,6 +95,18 @@ const Speak = () => {
           End Speaking
         </button>
       )}
+      {speakTime === 0 && !speaking && (
+        <button
+          onClick={startRecording}
+          className="mt-8 px-4 py-2 bg-blue-500 text-white rounded"
+        >
+          Start Speaking
+        </button>
+      )}
+      <div>
+        <p>Interim Transcript: {transcript}</p>
+        <p>Final Transcript: {text}</p>
+      </div>
     </div>
   );
 };
