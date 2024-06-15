@@ -8,9 +8,12 @@ const Speak = () => {
   const router = useRouter();
   const [speakTime, setSpeakTime] = useState<number>(0);
   const [speaking, setSpeaking] = useState<boolean>(false);
+  const [text, setText] = useState<string>("");
   const [transcript, setTranscript] = useState<string>("");
   const [theme, setTheme] = useState<string>("");
-  let recognition: any;
+  const [recognition, setRecognition] = useState<SpeechRecognition | null>(
+    null
+  );
 
   useEffect(() => {
     const speakTimeParam = searchParams.get("speakTime");
@@ -18,6 +21,59 @@ const Speak = () => {
     if (speakTimeParam) setSpeakTime(parseInt(speakTimeParam, 10));
     if (themeParam) setTheme(themeParam);
   }, [searchParams]);
+
+  useEffect(() => {
+    if (typeof window !== "undefined" && !recognition) {
+      const newRecognition = new (
+        window as any
+      ).webkitSpeechRecognition() as SpeechRecognition;
+      newRecognition.lang = "en-US";
+      newRecognition.continuous = true;
+      newRecognition.interimResults = true;
+
+      newRecognition.onresult = (event) => {
+        const results = event.results;
+        let interimTranscript = "";
+        for (let i = event.resultIndex; i < results.length; i++) {
+          if (results[i].isFinal) {
+            setText(
+              (prevText) => prevText + " " + results[i][0].transcript + "."
+            );
+            setTranscript("");
+          } else {
+            interimTranscript += results[i][0].transcript;
+          }
+        }
+        setTranscript(interimTranscript);
+      };
+
+      newRecognition.onerror = (event) => {
+        console.error("Speech recognition error:", event.error);
+        setSpeaking(false);
+      };
+
+      newRecognition.onend = () => {
+        if (speakTime > 0) {
+          newRecognition.start();
+        } else {
+          setSpeaking(false);
+        }
+      };
+
+      setRecognition(newRecognition);
+    }
+  }, [recognition, speakTime]);
+
+  useEffect(() => {
+    if (recognition && speaking) {
+      recognition.start();
+      console.log("Speech recognition started");
+    } else if (recognition) {
+      recognition.stop();
+      setText("");
+      console.log("Speech recognition stopped");
+    }
+  }, [speaking, recognition]);
 
   useEffect(() => {
     if (speakTime > 0) {
@@ -29,59 +85,16 @@ const Speak = () => {
       }
       const query = new URLSearchParams({
         theme: theme,
-        transcript: transcript,
+        transcript: text,
       }).toString();
+      console.log("Navigating to evaluation with query:", query);
       router.push(`/evaluation?${query}`);
     }
-  }, [speakTime, speaking, theme, transcript, router]);
-
-  const startRecording = () => {
-    setSpeaking(true);
-    if (!("webkitSpeechRecognition" in window)) {
-      alert("Your browser does not support speech recognition.");
-      return;
-    }
-
-    recognition = new (window as any).webkitSpeechRecognition();
-    recognition.lang = "en-US";
-    recognition.interimResults = true;
-    recognition.maxAlternatives = 1;
-
-    recognition.onresult = (event: { resultIndex: any; results: any }) => {
-      let interimTranscript = "";
-      for (let i = event.resultIndex; i < event.results.length; i++) {
-        const result = event.results[i];
-        if (result.isFinal) {
-          setTranscript(
-            (prevTranscript) =>
-              prevTranscript + " " + result[0].transcript + "."
-          );
-        } else {
-          interimTranscript += result[0].transcript;
-        }
-      }
-      console.log("Interim Transcript:", interimTranscript);
-    };
-
-    recognition.onerror = (event: { error: any }) => {
-      console.error(event.error);
-      setSpeaking(false);
-    };
-
-    recognition.onend = () => {
-      if (speakTime > 0) {
-        recognition.start();
-      } else {
-        setSpeaking(false);
-      }
-    };
-
-    recognition.start();
-  };
+  }, [speakTime, speaking, text, theme, recognition, router]);
 
   useEffect(() => {
-    if (speakTime > 0 && !speaking) {
-      startRecording();
+    if (speakTime > 0) {
+      setSpeaking(true);
     }
   }, [speakTime]);
 
@@ -98,6 +111,10 @@ const Speak = () => {
           End Speaking
         </button>
       )}
+      <div>
+        <p>Interim Transcript: {transcript}</p>
+        <p>Final Transcript: {text}</p>
+      </div>
     </div>
   );
 };
