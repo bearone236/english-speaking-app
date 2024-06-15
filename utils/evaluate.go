@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
+	"log"
 	"net/http"
 	"os"
 )
@@ -22,14 +23,14 @@ func InitializeEvaluationClient() *EvaluationClient {
 	}
 }
 
-func (client *EvaluationClient) EvaluateContent(ctx context.Context, theme, transcript string) (string, error) {
+func (client *EvaluationClient) EvaluateContent(ctx context.Context, prompt, transcript string) (string, error) {
 	url := client.APIURL + "?key=" + client.APIKey
 
 	requestBody, err := json.Marshal(map[string]interface{}{
 		"contents": []map[string]interface{}{
 			{
 				"parts": []map[string]string{
-					{"text": fmt.Sprintf("Theme: %s\n\nSpeech: %s\n\nEvaluate the above speech based on the theme and provide feedback on the accuracy and relevance of the response.", theme, transcript)},
+					{"text": fmt.Sprintf("あなたは優秀な英会話の評価者です。今回与えられたテーマとユーザーのスピーチ内容を元に詳細な評価を行ってください。曖昧になってしまっている表現に関しては良い表現を提示してあげてください。最後に修正した文章を表示してください。\n\n テーマ: %s \n\n スピーチ内容: %s", prompt, transcript)},
 				},
 			},
 		},
@@ -61,17 +62,47 @@ func (client *EvaluationClient) EvaluateContent(ctx context.Context, theme, tran
 		return "", fmt.Errorf("error decoding API response: %v", err)
 	}
 
-	evaluation, ok := result["evaluation"].(string)
-	if !ok {
+	// Handle the unexpected response format
+	evaluation, err := extractEvaluation(result)
+	if err != nil {
 		return "", fmt.Errorf("unexpected response format: %v", result)
 	}
 
 	return evaluation, nil
 }
 
+func extractEvaluation(result map[string]interface{}) (string, error) {
+	candidates, ok := result["candidates"].([]interface{})
+	if !ok || len(candidates) == 0 {
+		return "", fmt.Errorf("candidates not found")
+	}
+
+	firstCandidate, ok := candidates[0].(map[string]interface{})
+	if !ok {
+		return "", fmt.Errorf("invalid candidate format")
+	}
+
+	content, ok := firstCandidate["content"].(map[string]interface{})
+	if !ok {
+		return "", fmt.Errorf("content not found")
+	}
+
+	parts, ok := content["parts"].([]interface{})
+	if !ok || len(parts) == 0 {
+		return "", fmt.Errorf("parts not found")
+	}
+
+	text, ok := parts[0].(map[string]interface{})["text"].(string)
+	if !ok {
+		return "", fmt.Errorf("text not found")
+	}
+
+	return text, nil
+}
+
 func HandleEvaluate(w http.ResponseWriter, r *http.Request) {
 	var requestData struct {
-		Theme      string `json:"theme"`
+		Prompt     string `json:"prompt"`
 		Transcript string `json:"transcript"`
 	}
 
@@ -82,8 +113,9 @@ func HandleEvaluate(w http.ResponseWriter, r *http.Request) {
 
 	client := InitializeEvaluationClient()
 
-	message, err := client.EvaluateContent(context.Background(), requestData.Theme, requestData.Transcript)
+	message, err := client.EvaluateContent(context.Background(), requestData.Prompt, requestData.Transcript)
 	if err != nil {
+		log.Printf("Gemini API error: %v", err)
 		http.Error(w, fmt.Sprintf("Gemini API error: %v", err), http.StatusInternalServerError)
 		return
 	}
