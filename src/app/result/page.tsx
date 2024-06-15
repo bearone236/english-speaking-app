@@ -13,6 +13,7 @@ const Result = () => {
   const [speakTime, setSpeakTime] = useState<number>(0);
   const [thinkTime, setThinkTime] = useState<string | null>(null);
   const [level, setLevel] = useState<string | null>(null);
+  const [retryCount, setRetryCount] = useState<number>(0);
 
   useEffect(() => {
     const themeParam = searchParams.get("theme");
@@ -21,6 +22,7 @@ const Result = () => {
     const speakTimeParam = searchParams.get("speakTime");
     const thinkTimeParam = searchParams.get("thinkTime");
     const levelParam = searchParams.get("level");
+    const savedRetryCount = localStorage.getItem("retryCount");
 
     if (themeParam) setTheme(themeParam);
     if (transcriptParam) setTranscript(transcriptParam);
@@ -29,6 +31,7 @@ const Result = () => {
     if (speakTimeParam) setSpeakTime(parseInt(speakTimeParam, 10));
     if (thinkTimeParam) setThinkTime(thinkTimeParam);
     if (levelParam) setLevel(levelParam);
+    if (savedRetryCount) setRetryCount(parseInt(savedRetryCount, 10));
   }, [searchParams]);
 
   const handleEvaluateClick = async () => {
@@ -77,6 +80,16 @@ const Result = () => {
     }
   };
 
+  const handleRetrySpeakingClick = () => {
+    if (retryCount < 1) {
+      setRetryCount(retryCount + 1);
+      localStorage.setItem("retryCount", (retryCount + 1).toString());
+      router.push(
+        `/speaking?theme=${theme}&speakTime=${speakTime}&thinkTime=${thinkTime}&level=${level}`
+      );
+    }
+  };
+
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">
       {!error && theme && (
@@ -103,7 +116,7 @@ const Result = () => {
             }
             className="mt-8 px-4 py-2 bg-blue-500 text-white rounded"
           >
-            Retry Speaking
+            一度だけやり直す
           </button>
         </div>
       )}
@@ -113,7 +126,15 @@ const Result = () => {
           className="mt-8 px-4 py-2 bg-blue-500 text-white rounded"
           disabled={isLoading}
         >
-          {isLoading ? "Evaluating..." : "Start Evaluation"}
+          {isLoading ? "審査中..." : "審査開始"}
+        </button>
+      )}
+      {retryCount === 0 && !error && (
+        <button
+          onClick={handleRetrySpeakingClick}
+          className="mt-4 px-4 py-2 bg-yellow-500 text-white rounded"
+        >
+          一度だけやり直す
         </button>
       )}
     </div>
