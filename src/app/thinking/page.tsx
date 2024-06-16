@@ -8,6 +8,7 @@ const Think = () => {
   const router = useRouter();
   const [theme, setTheme] = useState<string | null>(null);
   const [thinkTime, setThinkTime] = useState<number | null>(null);
+  const [initialThinkTime, setInitialThinkTime] = useState<number | null>(null);
   const [speakTime, setSpeakTime] = useState<number | null>(null);
   const [level, setLevel] = useState<string | null>(null);
   const [countdown, setCountdown] = useState<number | null>(null);
@@ -20,7 +21,11 @@ const Think = () => {
     const levelParam = searchParams.get("level");
 
     if (themeParam) setTheme(themeParam);
-    if (thinkTimeParam) setThinkTime(parseInt(thinkTimeParam, 10));
+    if (thinkTimeParam) {
+      const time = parseInt(thinkTimeParam, 10);
+      setThinkTime(time);
+      setInitialThinkTime(time);
+    }
     if (speakTimeParam) setSpeakTime(parseInt(speakTimeParam, 10));
     if (levelParam) setLevel(levelParam);
   }, [searchParams]);
@@ -44,19 +49,18 @@ const Think = () => {
       const timer = setTimeout(() => setCountdown(countdown - 1), 1000);
       return () => clearTimeout(timer);
     } else {
-      if (theme && speakTime !== null && thinkTime !== null) {
-        const queryParams: Record<string, string> = {
+      if (theme && speakTime !== null && initialThinkTime !== null) {
+        // initialThinkTimeを使用
+        const query = new URLSearchParams({
           theme,
           speakTime: speakTime.toString(),
-          thinkTime: thinkTime.toString(),
+          thinkTime: initialThinkTime.toString(),
           level: level || "",
-        };
-
-        const query = new URLSearchParams(queryParams).toString();
+        }).toString();
         router.push(`/speaking?${query}`);
       }
     }
-  }, [countdown, router, theme, speakTime, thinkTime, level]);
+  }, [countdown, router, theme, speakTime, initialThinkTime, level]);
 
   const getLevelColor = (level: string) => {
     switch (level) {

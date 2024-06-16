@@ -12,12 +12,12 @@ const Speak = () => {
   const [text, setText] = useState<string>("");
   const [transcript, setTranscript] = useState<string>("");
   const [theme, setTheme] = useState<string>("");
+  const [thinkTime, setThinkTime] = useState<string | null>(null);
+  const [level, setLevel] = useState<string | null>(null);
   const [recognition, setRecognition] = useState<SpeechRecognition | null>(
     null
   );
   const [error, setError] = useState<string | null>(null);
-  const [thinkTime, setThinkTime] = useState<string | null>(null);
-  const [level, setLevel] = useState<string | null>(null);
 
   useEffect(() => {
     const speakTimeParam = searchParams.get("speakTime");
@@ -116,6 +116,7 @@ const Speak = () => {
         thinkTime: thinkTime || "0",
         level: level || "",
       }).toString();
+      console.log("Navigating to result with query:", query);
       router.push(`/result?${query}`);
     }
   }, [
@@ -155,7 +156,6 @@ const Speak = () => {
           End Speaking
         </button>
       )}
-      <div></div>
     </div>
   );
 };

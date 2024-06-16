@@ -15,6 +15,7 @@ const Result = () => {
   const [speakTime, setSpeakTime] = useState<number>(0);
   const [thinkTime, setThinkTime] = useState<string | null>(null);
   const [level, setLevel] = useState<string | null>(null);
+  const [retryAllowed, setRetryAllowed] = useState<boolean>(true);
 
   useEffect(() => {
     const themeParam = searchParams.get("theme");
@@ -61,8 +62,6 @@ const Result = () => {
 
       if (data && data.evaluation) {
         if (auth.currentUser) {
-          console.log("Current user:", auth.currentUser);
-          console.log("Saving data to Firestore...");
           await saveEvaluationResult(
             auth.currentUser.uid,
             theme,
@@ -72,7 +71,6 @@ const Result = () => {
             speakTime.toString(),
             level || ""
           );
-          console.log("Data saved to Firestore.");
         }
         const query = new URLSearchParams({
           theme: theme,
@@ -93,6 +91,18 @@ const Result = () => {
     }
   };
 
+  const handleRetrySpeaking = () => {
+    setRetryAllowed(false);
+
+    const query = new URLSearchParams({
+      theme: theme || "",
+      speakTime: speakTime.toString(),
+      thinkTime: thinkTime || "0",
+      level: level || "",
+    }).toString();
+    router.push(`/speaking?${query}`);
+  };
+
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">
       {!error && theme && (
@@ -111,14 +121,14 @@ const Result = () => {
         <div className="text-2xl font-bold mb-4 text-red-500">
           <h2>Error:</h2>
           <p>{error}</p>
-          <button
-            onClick={() =>
-              router.push(`/speaking?theme=${theme}&speakTime=${speakTime}`)
-            }
-            className="mt-8 px-4 py-2 bg-blue-500 text-white rounded"
-          >
-            Retry Speaking
-          </button>
+          {retryAllowed && (
+            <button
+              onClick={handleRetrySpeaking}
+              className="mt-8 px-4 py-2 bg-blue-500 text-white rounded"
+            >
+              Retry Speaking
+            </button>
+          )}
         </div>
       )}
       {transcript && !error && (

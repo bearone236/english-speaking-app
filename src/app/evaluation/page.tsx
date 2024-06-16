@@ -30,30 +30,25 @@ const Evaluation = () => {
     if (speakTimeParam) setSpeakTime(speakTimeParam);
     if (levelParam) setLevel(levelParam);
 
-    const saveResult = async () => {
-      if (
-        auth.currentUser &&
-        themeParam &&
-        transcriptParam &&
-        evaluationParam &&
-        thinkTimeParam &&
-        speakTimeParam &&
+    if (
+      auth.currentUser &&
+      themeParam &&
+      transcriptParam &&
+      evaluationParam &&
+      thinkTimeParam &&
+      speakTimeParam &&
+      levelParam
+    ) {
+      saveEvaluationResult(
+        auth.currentUser.uid,
+        themeParam,
+        transcriptParam,
+        evaluationParam,
+        thinkTimeParam,
+        speakTimeParam,
         levelParam
-      ) {
-        await saveEvaluationResult(
-          auth.currentUser.uid,
-          themeParam,
-          transcriptParam,
-          evaluationParam,
-          thinkTimeParam,
-          speakTimeParam,
-          levelParam,
-          true
-        );
-      }
-    };
-
-    saveResult();
+      );
+    }
   }, [searchParams]);
 
   return (
@@ -62,6 +57,12 @@ const Evaluation = () => {
         <div className="text-2xl font-bold mb-4">
           <h2>テーマ:</h2>
           <p>{theme}</p>
+        </div>
+      )}
+      {level && (
+        <div className="text-2xl font-bold mb-4">
+          <h2>Level:</h2>
+          <p>{level}</p>
         </div>
       )}
       {transcript && (
