@@ -3,6 +3,8 @@
 import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { marked } from "marked";
+import { saveEvaluationResult } from "@/lib/firestore";
+import { auth } from "@/lib/firebaseConfig";
 
 const Evaluation = () => {
   const searchParams = useSearchParams();
@@ -27,6 +29,31 @@ const Evaluation = () => {
     if (thinkTimeParam) setThinkTime(thinkTimeParam);
     if (speakTimeParam) setSpeakTime(speakTimeParam);
     if (levelParam) setLevel(levelParam);
+
+    const saveResult = async () => {
+      if (
+        auth.currentUser &&
+        themeParam &&
+        transcriptParam &&
+        evaluationParam &&
+        thinkTimeParam &&
+        speakTimeParam &&
+        levelParam
+      ) {
+        await saveEvaluationResult(
+          auth.currentUser.uid,
+          themeParam,
+          transcriptParam,
+          evaluationParam,
+          thinkTimeParam,
+          speakTimeParam,
+          levelParam,
+          true
+        );
+      }
+    };
+
+    saveResult();
   }, [searchParams]);
 
   return (
@@ -35,24 +62,6 @@ const Evaluation = () => {
         <div className="text-2xl font-bold mb-4">
           <h2>テーマ:</h2>
           <p>{theme}</p>
-        </div>
-      )}
-      {thinkTime && (
-        <div className="text-2xl font-bold mb-4">
-          <h2>Think Time:</h2>
-          <p>{thinkTime} seconds</p>
-        </div>
-      )}
-      {speakTime && (
-        <div className="text-2xl font-bold mb-4">
-          <h2>Speak Time:</h2>
-          <p>{speakTime} seconds</p>
-        </div>
-      )}
-      {level && (
-        <div className="text-2xl font-bold mb-4">
-          <h2>Level:</h2>
-          <p>{level}</p>
         </div>
       )}
       {transcript && (
@@ -66,7 +75,7 @@ const Evaluation = () => {
           <h2 className="text-2xl font-bold mb-4">Evaluation Result:</h2>
           <div
             className="text-gray-800"
-            dangerouslySetInnerHTML={{ __html: marked(evaluation) }}
+            dangerouslySetInnerHTML={{ __html: marked(evaluation || "") }}
           />
         </div>
       )}

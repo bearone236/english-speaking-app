@@ -1,8 +1,9 @@
 "use client";
-import { auth } from "@/lib/firebaseConfig";
-import { saveEvaluationResult } from "@/lib/firestore";
+
 import { useSearchParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import { auth } from "@/lib/firebaseConfig";
+import { saveEvaluationResult } from "@/lib/firestore";
 
 const Result = () => {
   const searchParams = useSearchParams();
@@ -61,19 +62,24 @@ const Result = () => {
 
       if (data && data.evaluation) {
         if (auth.currentUser) {
+          console.log("Current user:", auth.currentUser);
+          console.log("Saving data to Firestore...");
           await saveEvaluationResult(
             auth.currentUser.uid,
             theme,
             transcript,
-            data.evaluation
+            data.evaluation,
+            thinkTime || "0",
+            speakTime.toString(),
+            level || ""
           );
+          console.log("Data saved to Firestore.");
         }
-
         const query = new URLSearchParams({
-          theme,
-          transcript,
+          theme: theme,
+          transcript: transcript,
           evaluation: data.evaluation,
-          thinkTime: thinkTime || "",
+          thinkTime: thinkTime || "0",
           speakTime: speakTime.toString(),
           level: level || "",
         }).toString();
@@ -85,19 +91,6 @@ const Result = () => {
       console.error("Request failed:", error);
       setError("No speech detected or an error occurred. Please try again.");
       setIsLoading(false);
-    }
-  };
-
-  const handleRetrySpeaking = () => {
-    if (retryAllowed) {
-      setRetryAllowed(false);
-      const query = new URLSearchParams({
-        theme: theme || "",
-        speakTime: speakTime.toString(),
-        thinkTime: thinkTime || "",
-        level: level || "",
-      }).toString();
-      router.push(`/speaking?${query}`);
     }
   };
 
@@ -120,15 +113,16 @@ const Result = () => {
           <h2>Error:</h2>
           <p>{error}</p>
           <button
-            onClick={handleRetrySpeaking}
+            onClick={() =>
+              router.push(`/speaking?theme=${theme}&speakTime=${speakTime}`)
+            }
             className="mt-8 px-4 py-2 bg-blue-500 text-white rounded"
-            disabled={!retryAllowed}
           >
             Retry Speaking
           </button>
         </div>
       )}
-      {transcript && !error && (
+      {transcript && !error && retryAllowed && (
         <button
           onClick={handleEvaluateClick}
           className="mt-8 px-4 py-2 bg-blue-500 text-white rounded"
