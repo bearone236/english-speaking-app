@@ -15,7 +15,6 @@ const Result = () => {
   const [speakTime, setSpeakTime] = useState<number>(0);
   const [thinkTime, setThinkTime] = useState<string | null>(null);
   const [level, setLevel] = useState<string | null>(null);
-  const [retryAllowed, setRetryAllowed] = useState<boolean>(true);
 
   useEffect(() => {
     const themeParam = searchParams.get("theme");
@@ -122,7 +121,7 @@ const Result = () => {
           </button>
         </div>
       )}
-      {transcript && !error && retryAllowed && (
+      {transcript && !error && (
         <button
           onClick={handleEvaluateClick}
           className="mt-8 px-4 py-2 bg-blue-500 text-white rounded"
