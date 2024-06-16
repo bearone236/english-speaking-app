@@ -116,7 +116,6 @@ const Speak = () => {
         thinkTime: thinkTime || "0",
         level: level || "",
       }).toString();
-      console.log("Navigating to result with query:", query);
       router.push(`/result?${query}`);
     }
   }, [

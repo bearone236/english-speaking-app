@@ -62,7 +62,6 @@ const Home = () => {
         }
 
         const data = await response.json();
-        console.log("Received data:", data);
 
         const effectiveThinkTime =
           selectedThinkTime === "custom-think" ? thinkTime : selectedThinkTime;
