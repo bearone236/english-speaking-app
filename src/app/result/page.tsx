@@ -1,5 +1,6 @@
 "use client";
-
+import { auth } from "@/lib/firebaseConfig";
+import { saveEvaluationResult } from "@/lib/firestore";
 import { useSearchParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
@@ -13,7 +14,7 @@ const Result = () => {
   const [speakTime, setSpeakTime] = useState<number>(0);
   const [thinkTime, setThinkTime] = useState<string | null>(null);
   const [level, setLevel] = useState<string | null>(null);
-  const [retryCount, setRetryCount] = useState<number>(0);
+  const [retryAllowed, setRetryAllowed] = useState<boolean>(true);
 
   useEffect(() => {
     const themeParam = searchParams.get("theme");
@@ -22,7 +23,6 @@ const Result = () => {
     const speakTimeParam = searchParams.get("speakTime");
     const thinkTimeParam = searchParams.get("thinkTime");
     const levelParam = searchParams.get("level");
-    const savedRetryCount = localStorage.getItem("retryCount");
 
     if (themeParam) setTheme(themeParam);
     if (transcriptParam) setTranscript(transcriptParam);
@@ -31,7 +31,6 @@ const Result = () => {
     if (speakTimeParam) setSpeakTime(parseInt(speakTimeParam, 10));
     if (thinkTimeParam) setThinkTime(thinkTimeParam);
     if (levelParam) setLevel(levelParam);
-    if (savedRetryCount) setRetryCount(parseInt(savedRetryCount, 10));
   }, [searchParams]);
 
   const handleEvaluateClick = async () => {
@@ -61,9 +60,18 @@ const Result = () => {
       console.log("Received data:", data);
 
       if (data && data.evaluation) {
+        if (auth.currentUser) {
+          await saveEvaluationResult(
+            auth.currentUser.uid,
+            theme,
+            transcript,
+            data.evaluation
+          );
+        }
+
         const query = new URLSearchParams({
-          theme: theme,
-          transcript: transcript,
+          theme,
+          transcript,
           evaluation: data.evaluation,
           thinkTime: thinkTime || "",
           speakTime: speakTime.toString(),
@@ -80,13 +88,16 @@ const Result = () => {
     }
   };
 
-  const handleRetrySpeakingClick = () => {
-    if (retryCount < 1) {
-      setRetryCount(retryCount + 1);
-      localStorage.setItem("retryCount", (retryCount + 1).toString());
-      router.push(
-        `/speaking?theme=${theme}&speakTime=${speakTime}&thinkTime=${thinkTime}&level=${level}`
-      );
+  const handleRetrySpeaking = () => {
+    if (retryAllowed) {
+      setRetryAllowed(false);
+      const query = new URLSearchParams({
+        theme: theme || "",
+        speakTime: speakTime.toString(),
+        thinkTime: thinkTime || "",
+        level: level || "",
+      }).toString();
+      router.push(`/speaking?${query}`);
     }
   };
 
@@ -109,14 +120,11 @@ const Result = () => {
           <h2>Error:</h2>
           <p>{error}</p>
           <button
-            onClick={() =>
-              router.push(
-                `/speaking?theme=${theme}&speakTime=${speakTime}&thinkTime=${thinkTime}&level=${level}`
-              )
-            }
+            onClick={handleRetrySpeaking}
             className="mt-8 px-4 py-2 bg-blue-500 text-white rounded"
+            disabled={!retryAllowed}
           >
-            一度だけやり直す
+            Retry Speaking
           </button>
         </div>
       )}
@@ -126,15 +134,7 @@ const Result = () => {
           className="mt-8 px-4 py-2 bg-blue-500 text-white rounded"
           disabled={isLoading}
         >
-          {isLoading ? "審査中..." : "審査開始"}
-        </button>
-      )}
-      {retryCount === 0 && !error && (
-        <button
-          onClick={handleRetrySpeakingClick}
-          className="mt-4 px-4 py-2 bg-yellow-500 text-white rounded"
-        >
-          一度だけやり直す
+          {isLoading ? "Evaluating..." : "Start Evaluation"}
         </button>
       )}
     </div>
