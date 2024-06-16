@@ -11,8 +11,7 @@ const Evaluation = () => {
   const [theme, setTheme] = useState<string | null>(null);
   const [transcript, setTranscript] = useState<string | null>(null);
   const [evaluation, setEvaluation] = useState<string | null>(null);
-  const [thinkTime, setThinkTime] = useState<string | null>(null);
-  const [speakTime, setSpeakTime] = useState<string | null>(null);
+
   const [level, setLevel] = useState<string | null>(null);
 
   useEffect(() => {
@@ -26,8 +25,6 @@ const Evaluation = () => {
     if (themeParam) setTheme(themeParam);
     if (transcriptParam) setTranscript(transcriptParam);
     if (evaluationParam) setEvaluation(evaluationParam);
-    if (thinkTimeParam) setThinkTime(thinkTimeParam);
-    if (speakTimeParam) setSpeakTime(speakTimeParam);
     if (levelParam) setLevel(levelParam);
 
     if (
