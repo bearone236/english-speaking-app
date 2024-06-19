@@ -4,9 +4,11 @@ WORKDIR /app
 
 COPY package*.json ./
 
-RUN npm ci
+RUN npm ci && ls -la node_modules/next && npm install sharp
 
 COPY . .
+
+COPY .env .
 
 RUN npm run build
 
