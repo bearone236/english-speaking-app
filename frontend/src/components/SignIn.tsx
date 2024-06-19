@@ -4,6 +4,7 @@ import { signInWithPopup, onAuthStateChanged, signOut } from "firebase/auth";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import { auth, provider } from "@/lib/firebaseConfig";
+import Link from "next/link";
 
 export default function SignIn() {
   const [user, setUser] = useState<any>(null);
@@ -49,6 +50,13 @@ export default function SignIn() {
             />
           )}
           <span>{user.displayName}</span>
+          {user && (
+            <Link href="/history">
+              <button className="text-white font-semibold bg-orange-400 hover:bg-orange-500 px-4 py-2 rounded">
+                History
+              </button>
+            </Link>
+          )}
           <Button
             variant="secondary"
             className="text-white font-semibold bg-orange-400 hover:bg-orange-500"
