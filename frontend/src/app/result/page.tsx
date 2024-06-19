@@ -58,7 +58,6 @@ const Result = () => {
       }
 
       const data = await response.json();
-      console.log("Received data:", data);
 
       if (data && data.evaluation) {
         if (auth.currentUser) {
