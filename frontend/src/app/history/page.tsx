@@ -22,12 +22,10 @@ const History = () => {
     const fetchHistory = async () => {
       if (auth.currentUser) {
         const userHistory = await getEvaluationHistory(auth.currentUser.uid);
-        // ソート処理: 日付と時間の最新が上位に来るようにソート
         userHistory.sort(
           (a: any, b: any) => b.timestamp.seconds - a.timestamp.seconds
         );
         setHistory(userHistory);
-        console.log("Fetched and sorted history:", userHistory);
       } else {
         router.push("/");
       }
