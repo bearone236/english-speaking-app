@@ -1,18 +1,18 @@
 version: "3.8"
 
 services:
-  ui:
+  frontend:
     build:
-      context: ./ui
+      context: ./frontend
       dockerfile: Dockerfile
     ports:
       - "3000:3000"
     depends_on:
-      - app
+      - backend
 
-  app:
+  backend:
     build:
-      context: ./app
+      context: ./backend
       dockerfile: Dockerfile
     ports:
       - "8080:8080"
