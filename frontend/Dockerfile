@@ -1,17 +1,13 @@
-FROM node:18-alpine
+FROM node:22.5.1
 
-WORKDIR /app
+WORKDIR /frontend
 
-COPY package*.json ./
+COPY package.json package-lock.json ./
 
-RUN npm ci && ls -la node_modules/next && npm install sharp
+RUN npm install
 
 COPY . .
 
-COPY .env .
-
 RUN npm run build
-
-EXPOSE 3000
 
 CMD ["npm", "start"]

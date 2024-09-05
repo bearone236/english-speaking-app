@@ -1,6 +1,5 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
 import { useSearchParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
@@ -51,6 +50,7 @@ const Think = () => {
       return () => clearTimeout(timer);
     } else {
       if (theme && speakTime !== null && initialThinkTime !== null) {
+        // initialThinkTimeを使用
         const query = new URLSearchParams({
           theme,
           speakTime: speakTime.toString(),
@@ -76,12 +76,12 @@ const Think = () => {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-white p-4">
+    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">
       {showInfo && (
-        <div className="flex flex-wrap items-center justify-center space-x-4 space-y-4 mb-4 w-full ">
+        <div className="flex items-center space-x-4 mb-4">
           {level && (
             <div
-              className={`w-16 h-16 flex items-center justify-center text-white font-bold  ${getLevelColor(
+              className={`w-16 h-16 flex items-center justify-center text-white font-bold ${getLevelColor(
                 level
               )}`}
             >
@@ -89,16 +89,21 @@ const Think = () => {
             </div>
           )}
           {theme && (
-            <h1 className="text-3xl font-bold  select-none">{theme}</h1>
+            <h1
+              className="text-3xl font-bold select-none"
+              style={{ userSelect: "none" }}
+            >
+              {theme}
+            </h1>
           )}
         </div>
       )}
-      <div className="text-6xl font-bold text-orange-600">
+      <div className="text-6xl font-bold">
         {thinkTime !== null && thinkTime > 0 ? thinkTime : "Time's up!"}
       </div>
       {countdown !== null && countdown > 0 && (
-        <div className="text-2xl font-bold mt-4 text-orange-600">
-          {countdown}秒後に次のステップに進みます
+        <div className="text-2xl font-bold mt-4">
+          Moving to Speaking in {countdown}s
         </div>
       )}
     </div>

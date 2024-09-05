@@ -143,16 +143,16 @@ const Speak = () => {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen p-4 bg-white">
-      <div className="text-6xl font-bold text-orange-600">
+    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">
+      <div className="text-6xl font-bold">
         {speakTime > 0 ? speakTime : "Time's up!"}
       </div>
       {speakTime > 0 && (
         <button
           onClick={handleEndSpeaking}
-          className="mt-8 px-4 py-2 bg-orange-500 text-white rounded"
+          className="mt-8 px-4 py-2 bg-red-500 text-white rounded"
         >
-          審査を途中で止める
+          End Speaking
         </button>
       )}
     </div>

@@ -43,16 +43,13 @@ const Result = () => {
     setIsLoading(true);
     setError(null);
     try {
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/evaluate`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ prompt: theme, transcript }),
-        }
-      );
+      const response = await fetch("http://localhost:8080/api/evaluate", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ prompt: theme, transcript }),
+      });
 
       if (!response.ok) {
         const errorText = await response.text();
@@ -61,6 +58,7 @@ const Result = () => {
       }
 
       const data = await response.json();
+      console.log("Received data:", data);
 
       if (data && data.evaluation) {
         if (auth.currentUser) {
@@ -106,19 +104,17 @@ const Result = () => {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-white p-4">
+    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">
       {!error && theme && (
-        <div className="w-full max-w-xl p-6 mb-4 bg-orange-100 rounded-lg shadow-md">
-          <h2 className="text-2xl font-bold text-orange-600">Theme:</h2>
-          <p className="text-xl text-gray-700 mt-2">{theme}</p>
+        <div className="text-2xl font-bold mb-4">
+          <h2>Theme:</h2>
+          <p>{theme}</p>
         </div>
       )}
       {transcript && !error && (
-        <div className="w-full max-w-xl p-6 mb-4 bg-orange-100 rounded-lg shadow-md">
-          <h2 className="text-2xl font-bold text-orange-600">Your Speech:</h2>
-          <p className="text-xl text-gray-700 mt-2 whitespace-pre-wrap">
-            {transcript}
-          </p>
+        <div className="text-2xl font-bold mb-4">
+          <h2>Your Speech:</h2>
+          <p>{transcript}</p>
         </div>
       )}
       {error && (
@@ -128,7 +124,7 @@ const Result = () => {
           {retryAllowed && (
             <button
               onClick={handleRetrySpeaking}
-              className="mt-8 px-4 py-2 bg-orange-500 text-white rounded"
+              className="mt-8 px-4 py-2 bg-blue-500 text-white rounded"
             >
               Retry Speaking
             </button>
@@ -138,7 +134,7 @@ const Result = () => {
       {transcript && !error && (
         <button
           onClick={handleEvaluateClick}
-          className="mt-8 px-4 py-2 bg-orange-500 text-white rounded"
+          className="mt-8 px-4 py-2 bg-blue-500 text-white rounded"
           disabled={isLoading}
         >
           {isLoading ? "Evaluating..." : "Start Evaluation"}

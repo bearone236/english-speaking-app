@@ -11,6 +11,7 @@ const Evaluation = () => {
   const [theme, setTheme] = useState<string | null>(null);
   const [transcript, setTranscript] = useState<string | null>(null);
   const [evaluation, setEvaluation] = useState<string | null>(null);
+
   const [level, setLevel] = useState<string | null>(null);
 
   useEffect(() => {
@@ -48,31 +49,30 @@ const Evaluation = () => {
   }, [searchParams]);
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-white p-4">
+    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">
       {theme && (
-        <div className="w-full max-w-4xl p-6 mb-4 bg-orange-100 rounded-lg shadow-md">
-          <h2 className="text-2xl font-bold text-orange-600">テーマ:</h2>
-          <p className="text-xl text-gray-700 mt-2">{theme}</p>
+        <div className="text-2xl font-bold mb-4">
+          <h2>テーマ:</h2>
+          <p>{theme}</p>
         </div>
       )}
-
+      {level && (
+        <div className="text-2xl font-bold mb-4">
+          <h2>Level:</h2>
+          <p>{level}</p>
+        </div>
+      )}
       {transcript && (
-        <div className="w-full max-w-4xl p-6 mb-4 bg-orange-100 rounded-lg shadow-md">
-          <h2 className="text-2xl font-bold text-orange-600">
-            あなたのスピーチ内容:
-          </h2>
-          <p className="text-xl text-gray-700 mt-2 whitespace-pre-wrap">
-            {transcript}
-          </p>
+        <div className="text-2xl font-bold mb-4">
+          <h2>あなたのスピーチ内容:</h2>
+          <p>{transcript}</p>
         </div>
       )}
       {evaluation && (
-        <div className="w-full max-w-6xl p-6 mt-8 bg-white shadow-md rounded-lg">
-          {/* <h2 className="text-2xl font-bold text-orange-600 mb-4">
-            Evaluation Result:
-          </h2> */}
+        <div className="mt-8 p-4 bg-white shadow-md rounded-lg">
+          <h2 className="text-2xl font-bold mb-4">Evaluation Result:</h2>
           <div
-            className="text-gray-800 text-lg"
+            className="text-gray-800"
             dangerouslySetInnerHTML={{ __html: marked(evaluation || "") }}
           />
         </div>
