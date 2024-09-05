@@ -35,4 +35,20 @@ jobs:
       - name: Deploy frontend to Cloud Run
         run: |
           gcloud run deploy frontend-service \
-            --image gcr.io/kpu-cpp-project/frontend-service
+            --image gcr.io/kpu-cpp-project/frontend-service \
+            --platform managed \
+            --region asia-northeast1 \
+            --allow-unauthenticated
+
+      - name: Build and push Docker image for backend
+        run: |
+          docker build -t gcr.io/kpu-cpp-project/backend-service ./backend
+          docker push gcr.io/kpu-cpp-project/backend-service
+
+      - name: Deploy backend to Cloud Run
+        run: |
+          gcloud run deploy backend-service \
+            --image gcr.io/kpu-cpp-project/backend-service \
+            --platform managed \
+            --region asia-northeast1 \
+            --allow-unauthenticated
