@@ -7,14 +7,17 @@ RUN npm install
 
 COPY . .
 
-RUN npm cache clean --force
+RUN rm -rf .next
 
-RUN npm run build
+RUN NODE_OPTIONS="--max-old-space-size=4096" npm run build
 
 FROM node:18
 
 WORKDIR /app
 
-RUN npm install --only=production
+COPY package*.json ./
+RUN npm install --omit=dev
+
+COPY --from=build /app .
 
 CMD ["npm", "start"]
