@@ -46,13 +46,14 @@ const Home = () => {
       setLoading(true);
 
       const prompt_post = selectedTheme === "random" ? "random" : theme;
+      const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
       try {
-        const response = await fetch("http://localhost:8080/api/gemini", {
+        const response = await fetch(`${apiBaseUrl}/api/gemini`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ prompt: prompt_post, level: selectedLevel }),
+          body: JSON.stringify({ prompt: prompt_post }),
         });
 
         if (!response.ok) {

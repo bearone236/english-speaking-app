@@ -25,6 +25,7 @@ const Result = () => {
     const thinkTimeParam = searchParams.get("thinkTime");
     const levelParam = searchParams.get("level");
 
+
     if (themeParam) setTheme(themeParam);
     if (transcriptParam) setTranscript(transcriptParam);
     if (errorParam === "true")
@@ -35,6 +36,7 @@ const Result = () => {
   }, [searchParams]);
 
   const handleEvaluateClick = async () => {
+    const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
     if (!theme || !transcript) {
       setError("No speech detected or an error occurred. Please try again.");
       return;
@@ -43,12 +45,15 @@ const Result = () => {
     setIsLoading(true);
     setError(null);
     try {
-      const response = await fetch("http://localhost:8080/api/evaluate", {
+      const response = await fetch(`${apiBaseUrl}/api/evaluate`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ prompt: theme, transcript }),
+        body: JSON.stringify({
+          theme: theme,
+          transcript: transcript,
+        }),
       });
 
       if (!response.ok) {
