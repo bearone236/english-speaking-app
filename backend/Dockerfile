@@ -1,15 +1,15 @@
-FROM golang:1.20-alpine
+FROM golang:1.20
 
-WORKDIR /backend
+WORKDIR /app
 
 COPY go.mod go.sum ./
-
 RUN go mod download
 
 COPY . .
 
-RUN go build -o main .
+ENV GEMINI_API_KEY=${GEMINI_API_KEY}
+ENV GEMINI_API_URL=${GEMINI_API_URL}
 
-EXPOSE 8080
+RUN go build -o main .
 
 CMD ["./main"]
